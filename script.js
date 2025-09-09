@@ -70,4 +70,46 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+// Letak kod ini di dalam event listener DOMContentLoaded dalam script.js
+
+async function displayRecords() {
+    // Gantikan dengan URL .csv anda yang telah diterbitkan
+    const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ9rOx6UjrSq33l_CvTV38rQH5VHlrStU4nokV4buEL_YstUBSvbqP43MZ0t8404X6g0iMAHaguJPu0/pub?output=csv'; 
+
+    try {
+        const response = await fetch(sheetURL);
+        const data = await response.text();
+        const rows = data.split('\n').slice(1); // Potong baris header
+
+        const todayAbsencesDiv = document.getElementById('today-absences');
+        const monthlyRecordDiv = document.getElementById('monthly-record');
+
+        todayAbsencesDiv.innerHTML = ''; // Kosongkan kandungan sedia ada
+
+        const today = new Date().toLocaleDateString('en-CA'); // Format YYYY-MM-DD
+
+        rows.forEach(row => {
+            const columns = row.split(',');
+            // Andaian: Timestamp [0], Nama [1], Tarikh [2], Sebab [3]
+            const recordDate = new Date(columns[2]).toLocaleDateString('en-CA');
+            const studentName = columns[1];
+
+            if (recordDate === today) {
+                todayAbsencesDiv.innerHTML += `<p><strong>${studentName}</strong></p>`;
+            }
+        });
+
+        if (todayAbsencesDiv.innerHTML === '') {
+            todayAbsencesDiv.innerHTML = '<p><em>Tiada rekod ketidakhadiran untuk hari ini.</em></p>';
+        }
+
+        // Logik untuk rekod bulanan boleh ditambah di sini.
+
+    } catch (error) {
+        console.error('Gagal memuatkan rekod:', error);
+    }
+}
+
+// Panggil fungsi ini apabila halaman dimuatkan
+displayRecords();
 // Nota: Fungsi untuk memaparkan rekod akan dibincangkan di bahagian lain.
